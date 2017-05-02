@@ -18,6 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.content.Context;
+import android.util.Log;
+
+import com.polidea.rxandroidble.RxBleClient;
+
+import rx.Subscription;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+
+    private RxBleClient mRxBleClient;
+    private Subscription mScanSubscroption;
+    private final static String FilterDeviceName = "CC2650 SensorTag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        scanBleDevices((Context)this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 1;
         }
 
         @Override
@@ -158,5 +170,21 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    private boolean isScanning() {
+        return (mScanSubscroption != null);
+    }
+
+    private void scanBleDevices(Context context) {
+        mRxBleClient = AppExt.getRxBleClient(context);
+        mScanSubscroption = mRxBleClient
+                .scanBleDevices()
+                .filter(rxBleScanResult -> {
+                    return FilterDeviceName.equals(rxBleScanResult.getBleDevice().getName());
+                })
+                .subscribe(mRxBleClient -> {
+                    Log.d("BleShow-Main", "Scan device:" + mRxBleClient.getBleDevice().getMacAddress());
+                });
     }
 }
