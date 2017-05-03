@@ -22,11 +22,14 @@ import android.content.Context;
 import android.util.Log;
 
 import com.polidea.rxandroidble.RxBleClient;
-
 import rx.Subscription;
 
+import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
 
-public class MainActivity extends AppCompatActivity {
+
+
+public class MainActivity extends AppCompatActivity
+        implements ScanDevicesFragment.OnListFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -43,9 +46,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    private ScanDevicesFragment mScanDevices;
+
     private RxBleClient mRxBleClient;
     private Subscription mScanSubscroption;
     private final static String FilterDeviceName = "CC2650 SensorTag";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
          * number.
          */
         public static PlaceholderFragment newInstance(int sectionNumber) {
+
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -149,13 +156,18 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            if (position == 0) {
+                ScanDevicesFragment fragment = ScanDevicesFragment.newInstance(1);
+                return fragment;
+            }
+
             return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 1;
+            return 3;
         }
 
         @Override
@@ -186,5 +198,10 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(mRxBleClient -> {
                     Log.d("BleShow-Main", "Scan device:" + mRxBleClient.getBleDevice().getMacAddress());
                 });
+    }
+
+    @Override
+    public void onListFragmentInteraction(DeviceItem item) {
+
     }
 }
