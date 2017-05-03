@@ -8,6 +8,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="nameStyle">
+        <item name="android:textColor">#000</item>
+        <item name="android:textSize">18dp</item>
+    </style>
+
+    <style name="nameStyle.inactive">
+        <item name="android:textColor">#ccc</item>
+    </style>
+
+    <style name="nameStyleSelected">
+        <item name="android:textColor">#c33</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

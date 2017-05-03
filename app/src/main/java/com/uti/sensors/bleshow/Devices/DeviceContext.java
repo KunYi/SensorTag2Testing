@@ -28,12 +28,6 @@ public class DeviceContext {
 
     private static final int COUNT = 1;
 
-    static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDeviceItem(i));
-        }
-    }
 
     public static boolean CheckDeviceExist(final String mac) {
         return (ITEM_MAP.get(mac) != null);

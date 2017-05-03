@@ -2,4 +2,6 @@
     <string name="app_name">BleShow</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="image">sensortag2</string>
+    <string name="connect">Connect</string>
 </resources>
