@@ -1,8 +1,13 @@
 package com.uti.sensors.bleshow;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -23,6 +28,7 @@ import android.util.Log;
 
 import com.polidea.rxandroidble.RxBleClient;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
 
@@ -58,6 +64,18 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        boolean isCoarse = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED);
+        boolean isFine = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED);
+
+        if (!isCoarse || !isFine) {
+            ActivityCompat.requestPermissions(this, new String [] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION },
+                    1);
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -83,6 +101,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -174,7 +197,7 @@ public class MainActivity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "Sensors";
                 case 1:
                     return "SECTION 2";
                 case 2:
@@ -195,6 +218,7 @@ public class MainActivity extends AppCompatActivity
                 .filter(rxBleScanResult -> {
                     return FilterDeviceName.equals(rxBleScanResult.getBleDevice().getName());
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(mRxBleClient -> {
                     Log.d("BleShow-Main", "Scan device:" + mRxBleClient.getBleDevice().getMacAddress());
                 });
