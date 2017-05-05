@@ -26,6 +26,7 @@ public class ScanDevicesFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private ScanDevicesRecyclerViewAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,11 +68,15 @@ public class ScanDevicesFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new ScanDevicesRecyclerViewAdapter(DeviceContext.ITEMS, mListener));
+            mAdapter = new ScanDevicesRecyclerViewAdapter(DeviceContext.ITEMS, mListener);
+            recyclerView.setAdapter(mAdapter);
         }
         return view;
     }
 
+    public ScanDevicesRecyclerViewAdapter getAdapter() {
+        return mAdapter;
+    }
 
     @Override
     public void onAttach(Context context) {

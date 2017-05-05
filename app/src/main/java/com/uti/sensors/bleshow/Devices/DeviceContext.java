@@ -33,70 +33,42 @@ public class DeviceContext {
         return (ITEM_MAP.get(mac) != null);
     }
 
-    public static void UpdateRssi(final String mac, final int rssi) {
-        final DeviceItem dev = ITEM_MAP.get(mac);
-        if (dev != null)
-            dev.setRssi(rssi);
+    public static void AddorUpdateDevice(String mac, int rssi) {
+        DeviceItem dev = ITEM_MAP.get(mac);
+        if (dev == null) {
+            dev = new DeviceItem(mac, rssi);
+            dev.position = ITEMS.size();
+            addItem(dev);
+        }
+        else {
+            dev.nRSSI = rssi;
+        }
     }
 
     private static void addItem(DeviceItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
-    }
-
-    private static DeviceItem createDeviceItem(int position) {
-        return new DeviceItem(String.valueOf(position), "Item " + position, makeDetails(position));
-    }
-
-    private static String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
+        ITEM_MAP.put(item.MAC, item);
     }
 
     /**
      * A dummy item representing a piece of content.
      */
     public static class DeviceItem {
-        public final String id;
-        public final String content;
-        public final String details;
-        public RxBleDevice dev;
-        public int rssi;
+        public final String MAC;
+        public int nRSSI;
+        public boolean bConnected;
+        public int position;
 
-        public DeviceItem(RxBleDevice dev, int rssi) {
-            this.dev = dev;
-            this.rssi = rssi;
-            this.id = "123";
-            this.content = "test";
-            this.details = "dummy";
-        }
-
-        public DeviceItem(String id, String content, String details) {
-            this.id = id;
-            this.content = content;
-            this.details = details;
-
-        }
-
-        public String getMac() {
-            return dev.getMacAddress();
-        }
-
-        public int getRssi() {
-            return rssi;
-        }
-
-        public void setRssi(int rssi) {
-            this.rssi = rssi;
+        public DeviceItem(String mac, int rssi) {
+            this.MAC = mac;
+            this.nRSSI = rssi;
+            this.bConnected = false;
+            this.position = 0;
         }
 
         @Override
         public String toString() {
-            return content;
+            return MAC;
         }
     }
 }

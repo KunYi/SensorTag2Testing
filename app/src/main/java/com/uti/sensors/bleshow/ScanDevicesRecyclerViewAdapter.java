@@ -4,7 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.uti.sensors.bleshow.ScanDevicesFragment.OnListFragmentInteractionListener;
 import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
@@ -29,15 +31,16 @@ public class ScanDevicesRecyclerViewAdapter extends RecyclerView.Adapter<ScanDev
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_scandevices, parent, false);
+                .inflate(R.layout.element_device, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mMac.setText(holder.mItem.MAC);
+        holder.mRssi.setText(" RSSI: " + String.valueOf(holder.mItem.nRSSI));
+        holder.mConnected.setChecked(holder.mItem.bConnected);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,20 +61,22 @@ public class ScanDevicesRecyclerViewAdapter extends RecyclerView.Adapter<ScanDev
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView mMac;
+        public final TextView mRssi;
+        public final CheckBox mConnected;
         public DeviceItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mMac = (TextView) view.findViewById(R.id.mac);
+            mRssi = (TextView) view.findViewById(R.id.rssi);
+            mConnected = (CheckBox) view.findViewById(R.id.chkConnect);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mMac.getText() + "'";
         }
     }
 }

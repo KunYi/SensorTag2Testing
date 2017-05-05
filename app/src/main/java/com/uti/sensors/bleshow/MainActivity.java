@@ -27,9 +27,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.polidea.rxandroidble.RxBleClient;
+
+import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
+import com.uti.sensors.bleshow.Devices.DeviceContext;
 import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
 
 
@@ -81,6 +85,8 @@ public class MainActivity extends AppCompatActivity
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        mScanDevices = ScanDevicesFragment.newInstance(1);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -180,8 +186,7 @@ public class MainActivity extends AppCompatActivity
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             if (position == 0) {
-                ScanDevicesFragment fragment = ScanDevicesFragment.newInstance(1);
-                return fragment;
+                return mScanDevices;
             }
 
             return PlaceholderFragment.newInstance(position + 1);
@@ -218,14 +223,19 @@ public class MainActivity extends AppCompatActivity
                 .filter(rxBleScanResult -> {
                     return FilterDeviceName.equals(rxBleScanResult.getBleDevice().getName());
                 })
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mRxBleClient -> {
-                    Log.d("BleShow-Main", "Scan device:" + mRxBleClient.getBleDevice().getMacAddress());
+                .subscribe( mRxBleClient -> {
+                        DeviceContext.AddorUpdateDevice(mRxBleClient.getBleDevice().getMacAddress(), mRxBleClient.getRssi());
+                        mScanDevices.getAdapter().notifyDataSetChanged();
                 });
     }
 
     @Override
     public void onListFragmentInteraction(DeviceItem item) {
+        item.bConnected = !item.bConnected;
+        //DeviceContext.AddorUpdateDevice(item.MAC, item.nRSSI);
+        mScanDevices.getAdapter().notifyDataSetChanged();
 
     }
 }
