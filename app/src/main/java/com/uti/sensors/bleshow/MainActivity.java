@@ -8,7 +8,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -28,17 +27,18 @@ import android.util.Log;
 
 import com.polidea.rxandroidble.RxBleClient;
 
-import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import com.uti.sensors.bleshow.Devices.DeviceContext;
 import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
 
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends RxAppCompatActivity
         implements ScanDevicesFragment.OnListFragmentInteractionListener {
 
     /**
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 1;
         }
 
         @Override
@@ -220,22 +220,30 @@ public class MainActivity extends AppCompatActivity
         mRxBleClient = AppExt.getRxBleClient(context);
         mScanSubscroption = mRxBleClient
                 .scanBleDevices()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .filter(rxBleScanResult -> {
                     return FilterDeviceName.equals(rxBleScanResult.getBleDevice().getName());
                 })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe( mRxBleClient -> {
-                        DeviceContext.AddorUpdateDevice(mRxBleClient.getBleDevice().getMacAddress(), mRxBleClient.getRssi());
+                .subscribe( rxBleScanResult -> {
+                    int position = DeviceContext.AddorUpdateDevice(rxBleScanResult.getBleDevice()
+                            .getMacAddress(),
+                            rxBleScanResult.getRssi());
+                    if (position >= 0)
+                        {
+                        mScanDevices.getAdapter().notifyItemChanged(position);
+                    }
+                    else {
                         mScanDevices.getAdapter().notifyDataSetChanged();
+                    }
                 });
     }
+
 
     @Override
     public void onListFragmentInteraction(DeviceItem item) {
         item.bConnected = !item.bConnected;
-        //DeviceContext.AddorUpdateDevice(item.MAC, item.nRSSI);
-        mScanDevices.getAdapter().notifyDataSetChanged();
+        mScanDevices.getAdapter().notifyItemChanged(item.position);
 
     }
 }

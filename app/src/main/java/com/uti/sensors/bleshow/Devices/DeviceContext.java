@@ -33,16 +33,17 @@ public class DeviceContext {
         return (ITEM_MAP.get(mac) != null);
     }
 
-    public static void AddorUpdateDevice(String mac, int rssi) {
+    public static int AddorUpdateDevice(String mac, int rssi) {
         DeviceItem dev = ITEM_MAP.get(mac);
         if (dev == null) {
             dev = new DeviceItem(mac, rssi);
             dev.position = ITEMS.size();
             addItem(dev);
+            return -1;
         }
-        else {
-            dev.nRSSI = rssi;
-        }
+
+        dev.nRSSI = rssi;
+        return dev.position;
     }
 
     private static void addItem(DeviceItem item) {
