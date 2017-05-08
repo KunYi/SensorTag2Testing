@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.polidea.rxandroidble.RxBleDevice;
+import com.uti.sensors.bleshow.DeviceViewFragment;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -59,12 +60,14 @@ public class DeviceContext {
         public int nRSSI;
         public boolean bConnected;
         public int position;
+        public DeviceViewFragment fragment;
 
         public DeviceItem(String mac, int rssi) {
             this.MAC = mac;
             this.nRSSI = rssi;
             this.bConnected = false;
             this.position = 0;
+            this.fragment = null;
         }
 
         @Override
