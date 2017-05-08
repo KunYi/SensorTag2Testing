@@ -36,7 +36,8 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 import com.uti.sensors.bleshow.Devices.DeviceContext;
 import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
 
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends RxAppCompatActivity
         implements ScanDevicesFragment.OnListFragmentInteractionListener {
@@ -57,6 +58,7 @@ public class MainActivity extends RxAppCompatActivity
     private ViewPager mViewPager;
 
     private ScanDevicesFragment mScanDevices;
+    private List<DeviceViewFragment>  mDevices;
 
     private RxBleClient mRxBleClient;
     private Subscription mScanSubscroption;
@@ -87,6 +89,7 @@ public class MainActivity extends RxAppCompatActivity
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mScanDevices = ScanDevicesFragment.newInstance(1);
+        mDevices = new ArrayList<DeviceViewFragment>();
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -136,42 +139,6 @@ public class MainActivity extends RxAppCompatActivity
     }
 
     /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
-    /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
@@ -185,30 +152,26 @@ public class MainActivity extends RxAppCompatActivity
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if (position == 0) {
+            if (position == 0)
                 return mScanDevices;
-            }
 
-            return PlaceholderFragment.newInstance(position + 1);
+            // Return DeviceViewFragment
+            position -= 1;
+            return mDevices.get(position);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 1;
+            return mDevices.size()+1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "Sensors";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
+            if (position == 0)
+                return "Sensors";
+
+            position -= 1;
+            return mDevices.get(position).title;
         }
     }
 
@@ -230,20 +193,27 @@ public class MainActivity extends RxAppCompatActivity
                             .getMacAddress(),
                             rxBleScanResult.getRssi());
                     if (position >= 0)
-                        {
                         mScanDevices.getAdapter().notifyItemChanged(position);
-                    }
-                    else {
+                    else
                         mScanDevices.getAdapter().notifyDataSetChanged();
-                    }
                 });
     }
 
-
     @Override
     public void onListFragmentInteraction(DeviceItem item) {
-        item.bConnected = !item.bConnected;
+        boolean wantConnect = !item.bConnected;
+        item.bConnected = wantConnect;
         mScanDevices.getAdapter().notifyItemChanged(item.position);
 
+        if (wantConnect) {
+            DeviceViewFragment fragment = DeviceViewFragment.newInstance(mDevices.size(), item.MAC);
+            fragment.title = item.MAC;
+            item.fragment = fragment;
+            mDevices.add(fragment);
+        }
+        else {
+            mDevices.remove(item.fragment);
+        }
+        mSectionsPagerAdapter.notifyDataSetChanged();
     }
 }
