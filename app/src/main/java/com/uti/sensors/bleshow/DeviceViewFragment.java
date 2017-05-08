@@ -37,7 +37,8 @@ public class DeviceViewFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
         this.title = getArguments().getString(ARG_SECTION_TITLE);
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return view;
     }
 }
