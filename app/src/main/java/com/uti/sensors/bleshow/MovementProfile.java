@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.polidea.rxandroidble.RxBleConnection;
+import com.uti.Utils.Point3D;
 
 import java.util.UUID;
 
@@ -22,6 +23,9 @@ public class MovementProfile extends GenericProfile {
     private final static String GattConf = "F000AA82-0451-4000-B000-0000000000000";
     private final static String GattPeri = "F000AA83-0451-4000-B000-0000000000000";
     private final static byte[] Bconf =  new byte[] {(byte)0x7F,(byte)0x00};
+    private Point3D gyroscope;
+    private Point3D accelerometer;
+    private Point3D magnetometer;
 
     public MovementProfile(@NonNull rx.Observable<RxBleConnection> conn) {
         super(conn,
@@ -34,7 +38,16 @@ public class MovementProfile extends GenericProfile {
 
     public boolean registerNotification() {
         super.registerNotificationImp(bytes -> {
-            Log.d(TAG, "Bytes size:"+ bytes.length + " get value:" + bytes[0] + ", " + bytes[1]);
+            convertRaw(bytes);
+            Log.d(TAG, "Gryoscope X:" + gyroscope.x +
+                    ",Y:" + gyroscope.y +
+                    ",Z:" + gyroscope.z + "\n" +
+            "Accelermeter X:" + accelerometer.x +
+                    ",Y:" + accelerometer.y +
+                    ",Z:" + accelerometer.z + "\n" +
+            "Magnetormeter X:" + magnetometer.x +
+                    ",Y:" + magnetometer.y +
+                    ",Z:" + magnetometer.z);
         });
         return true;
     }
@@ -44,5 +57,20 @@ public class MovementProfile extends GenericProfile {
             Log.d(TAG, "Configuration complete!");
         });
         return true;
+    }
+
+    @Override
+    protected void convertRaw(byte[] bytes) {
+        final double scaleGyro =  (65536/500);
+        final double scaleAcce = (32768/2);
+        gyroscope = new Point3D(int16AtOffset(bytes, 0)/scaleGyro,
+                int16AtOffset(bytes, 2)/scaleGyro,
+                int16AtOffset(bytes, 4)/scaleGyro);
+        accelerometer = new Point3D(int16AtOffset(bytes, 6)/scaleAcce,
+                int16AtOffset(bytes, 8)/scaleAcce,
+                int16AtOffset(bytes, 10)/scaleAcce);
+        magnetometer = new Point3D(u16AtOffset(bytes, 12),
+                u16AtOffset(bytes, 14),
+                u16AtOffset(bytes, 16));
     }
 }
