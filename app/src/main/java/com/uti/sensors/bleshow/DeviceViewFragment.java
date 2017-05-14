@@ -21,14 +21,15 @@ import com.polidea.rxandroidble.RxBleConnection;
 import static com.trello.rxlifecycle.android.FragmentEvent.DESTROY;
 import static com.trello.rxlifecycle.android.FragmentEvent.PAUSE;
 import static java.lang.StrictMath.pow;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.polidea.rxandroidble.utils.ConnectionSharingAdapter;
 import com.trello.rxlifecycle.components.support.RxFragment;
 import com.uti.sensors.bleshow.Devices.DeviceContext;
 
-import java.util.Observable;
 import java.util.UUID;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -119,12 +120,17 @@ public class DeviceViewFragment extends Fragment {
                                 return super.call(source);
                             }
                         }.call(rxBleConnectionObservable))
+                    .flatMap(rxBleConnection -> // Set desired interval.
+                            Observable.interval(2, SECONDS).flatMap(sequence -> rxBleConnection.readRssi()))
+                    .doOnNext(this::updateRssi)
                 .subscribe( rxBleConnection -> {
-
                 });
         return view;
     }
 
+    private void updateRssi(int val) {
+        Log.d(TAG, "Rssi:" + val);
+    }
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
         if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTED)) {
             Log.d(TAG, "Device:"+title + "  connected");
