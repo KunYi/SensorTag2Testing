@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.polidea.rxandroidble.RxBleConnection;
+import com.polidea.rxandroidble.exceptions.BleGattException;
 
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public abstract class GenericProfile {
         mConn.flatMap(rxBleConnection -> rxBleConnection
                 .writeCharacteristic(uuidConf, baConf))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(action);
+                .subscribe(action, this::onConnectionFailure);
     }
 
     protected void registerNotificationImp(Action1<byte[]> action) {
@@ -59,7 +60,7 @@ public abstract class GenericProfile {
                 })
                 .flatMap(notificationObservable -> notificationObservable)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(action);
+                .subscribe(action, this::onConnectionFailure);
     }
 
     /*
@@ -82,6 +83,12 @@ public abstract class GenericProfile {
         Integer mB = (int) b[offset + 1] & 0xFF;
         Integer hB = (int) b[offset + 2] & 0xFF;
         return (hB << 16) + (mB << 8) + lB;
+    }
+
+    private void onConnectionFailure(Throwable throwable) {
+        BleGattException BGE = (BleGattException) throwable;
+        Log.d(TAG, "Catch connection failed:" + BGE.getMacAddress());
+        Log.d(TAG, "Throwable:" + throwable);
     }
     /*
      *  maybe need to implement the 2902 client description for service notificaiton enabled

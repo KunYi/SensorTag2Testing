@@ -101,13 +101,14 @@ public class DeviceViewFragment extends Fragment {
 
         RxBleDevice dev = mRxBleClient.getBleDevice(this.title);
 
+        // for monitor connection change status
         if (dev.getConnectionState() != RxBleConnection.RxBleConnectionState.CONNECTED)
             connectionState =  dev.observeConnectionStateChanges()
                 //.compose(bindUntilEvent(DESTROY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onConnectionStateChange);
 
-
+        // connection devices
         if (dev.getConnectionState() != RxBleConnection.RxBleConnectionState.CONNECTED)
             connection = dev.establishConnection(false)
                 //.compose(bindUntilEvent(PAUSE))
@@ -124,12 +125,15 @@ public class DeviceViewFragment extends Fragment {
                             Observable.interval(2, SECONDS).flatMap(sequence -> rxBleConnection.readRssi()))
                     .doOnNext(this::updateRssi)
                 .subscribe( rxBleConnection -> {
-                });
+                }, this::onConnectionFailure);
         return view;
     }
 
     private void updateRssi(int val) {
         Log.d(TAG, "Rssi:" + val);
+    }
+    private void onConnectionFailure(Throwable throwable) {
+            Log.d(TAG, "Catch connection failed");
     }
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
         if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTED)) {
