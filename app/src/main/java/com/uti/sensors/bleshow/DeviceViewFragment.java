@@ -2,14 +2,18 @@ package com.uti.sensors.bleshow;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothClass;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.ContentLoadingProgressBar;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+
 
 import android.util.Log;
 
@@ -49,6 +53,8 @@ public class DeviceViewFragment extends Fragment {
     private MovementProfile movement;
     private TempertureProfile temperture;
     private LuxometerProfile luxometer;
+    private ScrollView scroll;
+    private TableLayout   tabLayout;
 
     public DeviceViewFragment() {
         super();
@@ -57,9 +63,11 @@ public class DeviceViewFragment extends Fragment {
     private static final String ARG_SECTION_TITLE = "section_title";
     public String title;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mRxBleClient = AppExt.getRxBleClient(getContext());
     }
 
@@ -95,9 +103,11 @@ public class DeviceViewFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        this.title = getArguments().getString(ARG_SECTION_TITLE);
+        View view = inflater.inflate(R.layout.device_table, container, false);
+        scroll = (ScrollView) view;
+        tabLayout = (TableLayout) view.findViewById(R.id.generic_services_layout);
 
+        this.title = getArguments().getString(ARG_SECTION_TITLE);
 
         RxBleDevice dev = mRxBleClient.getBleDevice(this.title);
 
@@ -146,6 +156,28 @@ public class DeviceViewFragment extends Fragment {
 
             if (simpleKey.configuration())
                 simpleKey.registerNotification();
+
+            TableRow tr = new TableRow(getActivity());
+            tr.setId(10);
+            tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+            TextView tv1 = new TextView(getActivity());
+            tv1.setText("Service");
+            tv1.setId(11);
+            tv1.setTextColor(Color.WHITE);
+            tv1.setTextSize(32);
+            tv1.setPadding(5, 5, 5, 5);
+            tr.addView(tv1);
+
+            TextView tv2 = new TextView(getActivity());
+            tv2.setText("SimpleKey");
+            tv2.setId(12);
+            tv2.setTextColor(Color.WHITE);
+            tv1.setTextSize(32);
+            tv2.setPadding(5, 5, 5, 5);
+            tr.addView(tv2);
+
+            tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
             // For  Movement sensor services
             movement = new MovementProfile(mRxBleConnection);
