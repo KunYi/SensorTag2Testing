@@ -29,6 +29,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.polidea.rxandroidble.utils.ConnectionSharingAdapter;
 import com.trello.rxlifecycle.components.support.RxFragment;
+import com.uti.Utils.GenericTabRow;
 import com.uti.sensors.bleshow.Devices.DeviceContext;
 
 import java.util.UUID;
@@ -157,13 +158,13 @@ public class DeviceViewFragment extends Fragment {
             if (simpleKey.configuration())
                 simpleKey.registerNotification();
 
-            TableRow tr = new TableRow(getActivity());
-            tr.setId(10);
+            TableRow tr = new GenericTabRow(getActivity());
+            tr.setId(scroll.generateViewId());
             tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-
+/*
             TextView tv1 = new TextView(getActivity());
             tv1.setText("Service");
-            tv1.setId(11);
+            tv1.setId(scroll.generateViewId());
             tv1.setTextColor(Color.WHITE);
             tv1.setTextSize(32);
             tv1.setPadding(5, 5, 5, 5);
@@ -171,12 +172,12 @@ public class DeviceViewFragment extends Fragment {
 
             TextView tv2 = new TextView(getActivity());
             tv2.setText("SimpleKey");
-            tv2.setId(12);
+            tv2.setId(scroll.generateViewId());
             tv2.setTextColor(Color.WHITE);
             tv1.setTextSize(32);
             tv2.setPadding(5, 5, 5, 5);
             tr.addView(tv2);
-
+*/
             tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
             // For  Movement sensor services
