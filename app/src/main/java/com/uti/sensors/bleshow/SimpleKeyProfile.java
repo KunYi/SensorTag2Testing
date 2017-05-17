@@ -2,12 +2,10 @@ package com.uti.sensors.bleshow;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.TextView;
 
 import com.polidea.rxandroidble.RxBleConnection;
 
@@ -18,6 +16,7 @@ import java.util.UUID;
  */
 
 public class SimpleKeyProfile extends GenericProfile {
+    private final boolean DBG = false;
     private final String TAG = "SimpleKeyProfile";
     private static final String GattService = "0000FFE0-0000-1000-8000-00805F9B34FB";
     private static final String GattData = "0000FFE1-0000-1000-8000-00805F9B34FB";
@@ -46,6 +45,8 @@ public class SimpleKeyProfile extends GenericProfile {
         return ((keyState & fRight) != 0) ? true : false;
     }
 
+    public boolean isReed() { return ((keyState & fReed) != 0) ? true : false; }
+
     private String getKeyState(boolean key) {
         return (key) ?
                 isLeftKey() ? "press" : "release" :
@@ -62,18 +63,19 @@ public class SimpleKeyProfile extends GenericProfile {
         tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
-        super.registerNotificationImp(bytes -> {
+        super.registerNotificationImp( bytes -> {
             convertRaw(bytes);
 
             tr.leftKeyPressState.setImageResource(isLeftKey() ? R.drawable.leftkeyon_300 : R.drawable.leftkeyoff_300);
             tr.rightKeyPressState.setImageResource(isRightKey() ? R.drawable.rightkeyon_300 : R.drawable.rightkeyoff_300);
+            tr.reedState.setImageResource(isReed() ? R.drawable.reedrelayon_300 : R.drawable.reedrelayoff_300);
             tr.lastKeys = keyState;
             if (DBG)
                 Log.d(TAG, "Left key:" + getKeyState(true) + ", " +
                         "Right key:" + getKeyState(false));
         });
         return true;
-    }sta
+    }
 
     @Override
     public boolean configuration() {
