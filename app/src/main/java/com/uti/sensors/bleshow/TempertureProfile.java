@@ -2,11 +2,14 @@ package com.uti.sensors.bleshow;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.util.Log;
 import android.view.View;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 
 import com.polidea.rxandroidble.RxBleConnection;
+import com.uti.Utils.GenericTabRow;
 
 import java.util.UUID;
 
@@ -28,6 +31,9 @@ public class TempertureProfile extends GenericProfile {
     private final static byte[] Bconf =  new byte[] {(byte)0x01 };
     private double ambient;
     private double target;
+    protected GenericTabRow tr;
+    protected GenericTabRow am;
+    protected Context context;
 
     public TempertureProfile(@NonNull Observable<RxBleConnection> conn) {
         super(conn,
@@ -40,10 +46,40 @@ public class TempertureProfile extends GenericProfile {
 
     @Override
     public boolean registerNotification(Context con, View parenet, TableLayout tabLayout) {
+        am = new GenericTabRow(con);
+        am.sl1.autoScale = true;
+        am.sl1.autoScale = true;
+        am.sl1.autoScaleBounceBack = true;
+        am.setIcon("sensortag2", "temperature");
+        am.title.setText("Ambient Temperature Data");
+        am.uuidLabel.setText(GattData);
+        am.value.setText("0.0'C");
+        am.periodMinVal = 200;
+        am.periodBar.setMax(255 - (am.periodMinVal/10));
+        am.periodBar.setProgress(100);
+        am.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        tr = new GenericTabRow(con);
+        tr.sl1.autoScale = true;
+        tr.sl1.autoScaleBounceBack = true;
+        tr.setIcon("sensortag2", "irtemperature");
+        tr.title.setText("IR Temperature Data");
+        tr.uuidLabel.setText(GattData);
+        tr.value.setText("0.0'C");
+        tr.periodMinVal = 200;
+        tr.periodBar.setMax(255 - (tr.periodMinVal/10));
+        tr.periodBar.setProgress(100);
+        tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        tabLayout.addView(am, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+
         super.registerNotificationImp(bytes -> {
             convertRaw(bytes);
             if (DBG)
                 Log.d(TAG, "Ambient value:" + ambient + ", Target:" + target);
+            am.value.setText(String.format("%.1fC", ambient));
+            tr.value.setText(String.format("%.1fC", target));
+
         });
         return true;
     }
