@@ -1,7 +1,10 @@
 package com.uti.sensors.bleshow;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
+import android.widget.TableLayout;
 
 import com.polidea.rxandroidble.RxBleConnection;
 
@@ -34,7 +37,7 @@ public class LuxometerProfile extends GenericProfile {
     }
 
     @Override
-    public boolean registerNotification() {
+    public boolean registerNotification(Context con, View parenet, TableLayout tabLayout) {
         super.registerNotificationImp(bytes -> {
             convertRaw(bytes);
             if (DBG)

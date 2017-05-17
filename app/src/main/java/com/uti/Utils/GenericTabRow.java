@@ -10,6 +10,10 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatSeekBar;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -88,14 +92,14 @@ public class GenericTabRow extends TableRow implements
 
         //Add all views for the default cell
         //Service icon
-        this.icon = new ImageView(con) {
+        this.icon = new AppCompatImageView(con) {
             {
                 setId(1);
                 setPadding(30, 30, 30, 30);
             }
         };
         //Service title
-        this.title = new TextView(con) {
+        this.title = new AppCompatTextView(con) {
             {
                 setTextSize(TypedValue.COMPLEX_UNIT_PT, 10.0f);
                 setTypeface(null, Typeface.BOLD);
@@ -104,7 +108,7 @@ public class GenericTabRow extends TableRow implements
             }
         };
         //Service UUID, hidden by default
-        this.uuidLabel = new TextView(con) {
+        this.uuidLabel = new AppCompatTextView(con) {
             {
                 setTextSize(TypedValue.COMPLEX_UNIT_PT, 8.0f);
                 setId(3);
@@ -113,7 +117,7 @@ public class GenericTabRow extends TableRow implements
         };
 
         //One Value
-        this.value = new TextView(con) {
+        this.value = new AppCompatTextView(con) {
             {
                 setTextSize(TypedValue.COMPLEX_UNIT_PT, 8.0f);
                 setTextAlignment(TEXT_ALIGNMENT_VIEW_END);
@@ -150,28 +154,28 @@ public class GenericTabRow extends TableRow implements
                 setChecked(true);
             }
         };
-        this.periodBar = new SeekBar(con) {
+        this.periodBar = new AppCompatSeekBar(con) {
             {
                 setVisibility(View.INVISIBLE);
                 setId(101);
                 setMax(245);
             }
         };
-        this.onOffLegend = new TextView(con) {
+        this.onOffLegend = new AppCompatTextView(con) {
             {
                 setVisibility(View.INVISIBLE);
                 setId(102);
                 setText("Sensor state");
             }
         };
-        this.periodLegend = new TextView(con) {
+        this.periodLegend = new AppCompatTextView(con) {
             {
                 setVisibility(View.INVISIBLE);
                 setId(103);
                 setText("Sensor period");
             }
         };
-        this.calibrateButton = new Button(con) {
+        this.calibrateButton = new AppCompatButton(con) {
             {
                 setVisibility(View.INVISIBLE);
                 setId(104);
@@ -303,10 +307,10 @@ public class GenericTabRow extends TableRow implements
 
 
         Log.d(TAG, "Width : " + dSize.x + " Height : " + dSize.y);
-        // Log.d("GenericCharacteristicTableRow", "Fetching icon : " + GattInfo.uuidToIcon(UUID.fromString(uuid)));
+        Log.d(TAG, "Fetching icon : " + uuid);
         if (dSize.x > 1100) {
-            //Uri uri = Uri.parse("android.resource://" + this.context.getPackageName() + "/drawable/" + iconPrefix + GattInfo.uuidToIcon(UUID.fromString(uuid)) + "_300");
-            Uri uri = Uri.parse("android.resoure://");
+            Uri uri = Uri.parse("android.resource://" + this.context.getPackageName() + "/drawable/" + iconPrefix + uuid + "_300");
+            //Uri uri = Uri.parse("android.resoure://" +this.context.getPackageName() + "/drawable/" + iconPrefix + uuid + "_300" );
             try {
                 InputStream inputStream = this.context.getContentResolver().openInputStream(uri);
                 image = Drawable.createFromStream(inputStream, uri.toString());
@@ -316,7 +320,7 @@ public class GenericTabRow extends TableRow implements
             }
         } else {
             //Uri uri = Uri.parse("android.resource://" + this.context.getPackageName() + "/drawable/" + iconPrefix + GattInfo.uuidToIcon(UUID.fromString(uuid)));
-            Uri uri = Uri.parse("android.resoure://");
+            Uri uri = Uri.parse("android.resoure://" +this.context.getPackageName() + "/drawable/" + iconPrefix + uuid );
             try {
                 InputStream inputStream = this.context.getContentResolver().openInputStream(uri);
                 image = Drawable.createFromStream(inputStream, uri.toString());

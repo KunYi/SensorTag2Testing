@@ -1,7 +1,10 @@
 package com.uti.sensors.bleshow;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
+import android.widget.TableLayout;
 
 import com.polidea.rxandroidble.RxBleConnection;
 import com.uti.Utils.Point3D;
@@ -36,7 +39,7 @@ public class MovementProfile extends GenericProfile {
                 Bconf );
     }
 
-    public boolean registerNotification() {
+    public boolean registerNotification(Context con, View parenet, TableLayout tabLayout) {
         super.registerNotificationImp(bytes -> {
             convertRaw(bytes);
             Log.d(TAG, "Gryoscope X:" + gyroscope.x +

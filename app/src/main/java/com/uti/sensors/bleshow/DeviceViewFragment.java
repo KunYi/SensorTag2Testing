@@ -156,42 +156,20 @@ public class DeviceViewFragment extends Fragment {
             simpleKey = new SimpleKeyProfile(mRxBleConnection);
 
             if (simpleKey.configuration())
-                simpleKey.registerNotification();
-
-            TableRow tr = new GenericTabRow(getActivity());
-            tr.setId(scroll.generateViewId());
-            tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-/*
-            TextView tv1 = new TextView(getActivity());
-            tv1.setText("Service");
-            tv1.setId(scroll.generateViewId());
-            tv1.setTextColor(Color.WHITE);
-            tv1.setTextSize(32);
-            tv1.setPadding(5, 5, 5, 5);
-            tr.addView(tv1);
-
-            TextView tv2 = new TextView(getActivity());
-            tv2.setText("SimpleKey");
-            tv2.setId(scroll.generateViewId());
-            tv2.setTextColor(Color.WHITE);
-            tv1.setTextSize(32);
-            tv2.setPadding(5, 5, 5, 5);
-            tr.addView(tv2);
-*/
-            tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                simpleKey.registerNotification(getActivity(), scroll, tabLayout);
 
             // For  Movement sensor services
             movement = new MovementProfile(mRxBleConnection);
             if (movement.configuration())
-                movement.registerNotification();
+                movement.registerNotification(getActivity(), scroll, tabLayout);
 
             temperture = new TempertureProfile(mRxBleConnection);
             if(temperture.configuration())
-                temperture.registerNotification();
+                temperture.registerNotification(getActivity(), scroll, tabLayout);
 
             luxometer = new LuxometerProfile(mRxBleConnection);
             if(luxometer.configuration())
-                luxometer.registerNotification();
+                luxometer.registerNotification(getActivity(), scroll, tabLayout);
         }
         else if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTING)) {
             Log.d(TAG, "Device:"+title+ "  connecting");

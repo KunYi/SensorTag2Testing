@@ -1,7 +1,10 @@
 package com.uti.sensors.bleshow;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
+import android.widget.TableLayout;
 
 import com.polidea.rxandroidble.RxBleConnection;
 
@@ -16,7 +19,7 @@ import static java.lang.StrictMath.pow;
  */
 
 public class TempertureProfile extends GenericProfile {
-
+    private final boolean DBG = false;
     private final String TAG = "TempertureProfile";
     private final static String GattServ = "F000AA00-0451-4000-B000-0000000000000";
     private final static String GattData = "F000AA01-0451-4000-B000-0000000000000";
@@ -36,7 +39,7 @@ public class TempertureProfile extends GenericProfile {
     }
 
     @Override
-    public boolean registerNotification() {
+    public boolean registerNotification(Context con, View parenet, TableLayout tabLayout) {
         super.registerNotificationImp(bytes -> {
             convertRaw(bytes);
             if (DBG)

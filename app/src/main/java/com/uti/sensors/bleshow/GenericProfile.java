@@ -1,9 +1,12 @@
 package com.uti.sensors.bleshow;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.NetworkOnMainThreadException;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
+import android.widget.TableLayout;
 
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleGattException;
@@ -41,7 +44,7 @@ public abstract class GenericProfile {
         this.baConf = baConf;
     }
 
-    public abstract boolean registerNotification();
+    public abstract boolean registerNotification(Context con, View parenet, TableLayout tabLayout);
     public abstract boolean configuration();
     protected abstract void convertRaw(byte[] bytes);
 
