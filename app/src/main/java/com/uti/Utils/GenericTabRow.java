@@ -104,7 +104,6 @@ public class GenericTabRow extends TableRow implements
                 setTextSize(TypedValue.COMPLEX_UNIT_PT, 10.0f);
                 setTypeface(null, Typeface.BOLD);
                 setId(2);
-                setText("SimpleText");
             }
         };
         //Service UUID, hidden by default
@@ -134,7 +133,7 @@ public class GenericTabRow extends TableRow implements
         };
         this.sl2 = new SparkLineView(con) {
             {
-                setVisibility(View.VISIBLE);
+                setVisibility(View.INVISIBLE);
                 setId(6);
                 setEnabled(false);
             }
@@ -218,7 +217,7 @@ public class GenericTabRow extends TableRow implements
         uuidLabel.setLayoutParams(tmpLayoutParams);
 
         tmpLayoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
         tmpLayoutParams.addRule(RelativeLayout.BELOW,
                 title.getId());
