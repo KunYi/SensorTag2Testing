@@ -58,7 +58,7 @@ public class SimpleKeyProfile extends GenericProfile {
         SimpleKeyTabRow tr = new SimpleKeyTabRow(con);
         tr.setId(parenet.generateViewId());
         tr.setIcon("sensortag2", "simplekeys");
-        tr.title.setText("SimpleKeys");
+        tr.title.setText("Key press state");
         tr.uuidLabel.setText("0000FFE1-0000-1000-8000-00805F9B34FB");
         tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
