@@ -44,6 +44,7 @@ public class DeviceViewFragment extends Fragment {
     private LuxometerProfile luxometer;
     private ScrollView scroll = null;
     private TableLayout tabLayout;
+
     public DeviceViewFragment() {
         super();
     }
@@ -173,7 +174,6 @@ public class DeviceViewFragment extends Fragment {
 
             // for SimpleKey services
             simpleKey = new SimpleKeyProfile(mRxBleConnection);
-
             if (simpleKey.configuration())
                 simpleKey.registerNotification(getActivity(), scroll, tabLayout);
 
@@ -182,13 +182,13 @@ public class DeviceViewFragment extends Fragment {
             if (movement.configuration())
                 movement.registerNotification(getActivity(), scroll, tabLayout);
 
-            temperture = new TempertureProfile(mRxBleConnection);
-            if (temperture.configuration())
-                temperture.registerNotification(getActivity(), scroll, tabLayout);
-
             luxometer = new LuxometerProfile(mRxBleConnection);
             if (luxometer.configuration())
                 luxometer.registerNotification(getActivity(), scroll, tabLayout);
+
+            temperture = new TempertureProfile(mRxBleConnection);
+            if (temperture.configuration())
+                temperture.registerNotification(getActivity(), scroll, tabLayout);
         } else if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTING)) {
             Log.d(TAG, "Device:" + title + "  connecting");
         } else if (newState.equals(RxBleConnection.RxBleConnectionState.DISCONNECTED)) {
