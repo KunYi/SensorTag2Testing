@@ -29,8 +29,8 @@ public class TempertureProfile extends GenericProfile {
     private final static String GattConf = "F000AA02-0451-4000-B000-0000000000000";
     private final static String GattPeri = "F000AA03-0451-4000-B000-0000000000000";
     private final static byte[] Bconf =  new byte[] {(byte)0x01 };
-    private double ambient;
-    private double target;
+    private float ambient;
+    private float target;
     protected GenericTabRow tr;
     protected GenericTabRow am;
     protected Context context;
@@ -64,7 +64,7 @@ public class TempertureProfile extends GenericProfile {
         tr.setIcon("sensortag2", "irtemperature");
         tr.title.setText("IR Temperature Data");
         tr.uuidLabel.setText(GattData);
-        tr.value.setText("0.0'C");
+        tr.value.setText("0.0°C");
         tr.periodMinVal = 200;
         tr.periodBar.setMax(255 - (tr.periodMinVal/10));
         tr.periodBar.setProgress(100);
@@ -77,8 +77,11 @@ public class TempertureProfile extends GenericProfile {
             convertRaw(bytes);
             if (DBG)
                 Log.d(TAG, "Ambient value:" + ambient + ", Target:" + target);
-            am.value.setText(String.format("%.1fC", ambient));
-            tr.value.setText(String.format("%.1fC", target));
+            am.value.setText(String.format("%.1f°C", ambient));
+            am.sl1.addValue(ambient);
+            tr.value.setText(String.format("%.1f°C", target));
+            tr.sl1.addValue(target);
+
 
         });
         return true;
@@ -95,7 +98,7 @@ public class TempertureProfile extends GenericProfile {
 
     @Override
     protected void convertRaw(byte[] bytes) {
-        final double SCALE_LSB = (0.03125f);
+        final float SCALE_LSB = (0.03125f);
         // TI -- TMP007 sensor algorithm
         target = (int16AtOffset(bytes, 0)>>2)*SCALE_LSB;
         ambient = (int16AtOffset(bytes, 2)>>2)*SCALE_LSB;
