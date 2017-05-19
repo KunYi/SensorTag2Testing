@@ -31,6 +31,7 @@ public class TempertureProfile extends GenericProfile {
     private final static byte[] Bconf =  new byte[] {(byte)0x01 };
     private float ambient;
     private float target;
+    private final boolean enabledIR = false;
     protected GenericTabRow tr;
     protected GenericTabRow am;
     protected Context context;
@@ -58,19 +59,22 @@ public class TempertureProfile extends GenericProfile {
         am.periodBar.setMax(255 - (am.periodMinVal/10));
         am.periodBar.setProgress(100);
         am.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-        tr = new GenericTabRow(con);
-        tr.sl1.autoScale = true;
-        tr.sl1.autoScaleBounceBack = true;
-        tr.setIcon("sensortag2", "irtemperature");
-        tr.title.setText("IR Temperature Data");
-        tr.uuidLabel.setText(GattData);
-        tr.value.setText("0.0°C");
-        tr.periodMinVal = 200;
-        tr.periodBar.setMax(255 - (tr.periodMinVal/10));
-        tr.periodBar.setProgress(100);
-        tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         tabLayout.addView(am, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-        tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        if (enabledIR) {
+            // due to APM/Benson ask to remove
+            tr = new GenericTabRow(con);
+            tr.sl1.autoScale = true;
+            tr.sl1.autoScaleBounceBack = true;
+            tr.setIcon("sensortag2", "irtemperature");
+            tr.title.setText("IR Temperature Data");
+            tr.uuidLabel.setText(GattData);
+            tr.value.setText("0.0°C");
+            tr.periodMinVal = 200;
+            tr.periodBar.setMax(255 - (tr.periodMinVal / 10));
+            tr.periodBar.setProgress(100);
+            tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+            tabLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        }
 
 
         super.registerNotificationImp(bytes -> {
@@ -79,10 +83,10 @@ public class TempertureProfile extends GenericProfile {
                 Log.d(TAG, "Ambient value:" + ambient + ", Target:" + target);
             am.value.setText(String.format("%.1f°C", ambient));
             am.sl1.addValue(ambient);
-            tr.value.setText(String.format("%.1f°C", target));
-            tr.sl1.addValue(target);
-
-
+            if (enabledIR) {
+                tr.value.setText(String.format("%.1f°C", target));
+                tr.sl1.addValue(target);
+            }
         });
         return true;
     }
