@@ -42,6 +42,8 @@ public class DeviceViewFragment extends Fragment {
     private MovementProfile movement;
     private TempertureProfile temperture;
     private LuxometerProfile luxometer;
+    private BarometerProfile barometer;
+    private HumidityProfile humidity;
     private ScrollView scroll = null;
     private TableLayout tabLayout;
 
@@ -185,6 +187,14 @@ public class DeviceViewFragment extends Fragment {
             luxometer = new LuxometerProfile(mRxBleConnection);
             if (luxometer.configuration())
                 luxometer.registerNotification(getActivity(), scroll, tabLayout);
+
+            barometer = new BarometerProfile(mRxBleConnection);
+            if (barometer.configuration())
+                barometer.registerNotification(getActivity(), scroll, tabLayout);
+
+            humidity = new HumidityProfile(mRxBleConnection);
+            if (humidity.configuration())
+                humidity.registerNotification(getActivity(), scroll, tabLayout);
 
             temperture = new TempertureProfile(mRxBleConnection);
             if (temperture.configuration())
