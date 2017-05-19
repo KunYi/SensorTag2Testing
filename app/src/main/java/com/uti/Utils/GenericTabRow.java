@@ -68,6 +68,7 @@ public class GenericTabRow extends TableRow implements
     public final static String EXTRA_SERVICE_UUID = "com.uti.util.EXTRA_SERVICE_UUID";
     public final static String EXTRA_PERIOD = "com.uti.util.EXTRA_PERIOD";
     public final static String EXTRA_ONOFF = "com.uti.util.EXTRA_ONOFF";
+    protected final boolean disabledClick = true;
 
     public int periodMinVal;
 
@@ -404,6 +405,9 @@ public class GenericTabRow extends TableRow implements
 
     @Override
     public void onClick(View v) {
+        if (disabledClick)
+            return;
+
         this.config = !this.config;
         Log.d("onClick", "Row ID" + v.getId());
         //Toast.makeText(this.context, "Found row with title : " + this.title.getText(), Toast.LENGTH_SHORT).show();

@@ -23,7 +23,7 @@ import static java.lang.Math.pow;
  */
 
 public class BarometerProfile extends GenericProfile {
-    private final boolean DBG = true;
+    private final boolean DBG = false;
     private final String TAG = "BarometerProfile";
     private final static String GattServ = "F000AA40-0451-4000-B000-0000000000000";
     private final static String GattData = "F000AA41-0451-4000-B000-0000000000000";
@@ -97,7 +97,7 @@ public class BarometerProfile extends GenericProfile {
         }
         super.configurationImp(bytes->{
             if (DBG)
-            Log.d(TAG, "Configigration complete");
+                Log.d(TAG, "Configigration complete");
         });
         return true;
     }

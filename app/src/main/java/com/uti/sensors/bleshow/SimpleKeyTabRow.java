@@ -127,6 +127,9 @@ public class SimpleKeyTabRow extends GenericTabRow {
 
     @Override
     public void onClick(View v) {
+        if (disabledClick)
+            return;
+
         super.onClick(v);
         Animation fadeOut = new AlphaAnimation(1.0f, 0.0f);
         fadeOut.setAnimationListener(this);

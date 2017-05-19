@@ -179,6 +179,9 @@ public class MovementTabRow extends GenericTabRow {
 
     @Override
     public void onClick(View v) {
+        if (disabledClick)
+            return;
+
         this.config = !this.config;
         Log.d(TAG, "onClick(), Row ID" + v.getId());
         //Toast.makeText(this.context, "Found row with title : " + this.title.getText(), Toast.LENGTH_SHORT).show();
