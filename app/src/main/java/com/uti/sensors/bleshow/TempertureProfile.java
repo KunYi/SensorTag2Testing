@@ -81,7 +81,7 @@ public class TempertureProfile extends GenericProfile {
             convertRaw(bytes);
             if (DBG)
                 Log.d(TAG, "Ambient value:" + ambient + ", Target:" + target);
-            am.value.setText(String.format("%.1f°C", ambient));
+            am.value.setText(String.format("%.1f°C", (ambient-1)));
             am.sl1.addValue(ambient);
             if (enabledIR) {
                 tr.value.setText(String.format("%.1f°C", target));
