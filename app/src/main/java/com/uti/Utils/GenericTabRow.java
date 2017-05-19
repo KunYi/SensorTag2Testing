@@ -319,7 +319,7 @@ public class GenericTabRow extends TableRow implements
             }
         } else {
             //Uri uri = Uri.parse("android.resource://" + this.context.getPackageName() + "/drawable/" + iconPrefix + GattInfo.uuidToIcon(UUID.fromString(uuid)));
-            Uri uri = Uri.parse("android.resoure://" +this.context.getPackageName() + "/drawable/" + iconPrefix + uuid );
+            Uri uri = Uri.parse("android.resource://" +this.context.getPackageName() + "/drawable/" + iconPrefix + uuid);
             try {
                 InputStream inputStream = this.context.getContentResolver().openInputStream(uri);
                 image = Drawable.createFromStream(inputStream, uri.toString());
