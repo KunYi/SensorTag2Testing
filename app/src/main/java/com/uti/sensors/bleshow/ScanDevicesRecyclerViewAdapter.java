@@ -38,6 +38,7 @@ public class ScanDevicesRecyclerViewAdapter extends RecyclerView.Adapter<ScanDev
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
+        holder.mTitle.setText(holder.mItem.name);
         holder.mMac.setText(holder.mItem.MAC);
         holder.mRssi.setText(" RSSI: " + String.valueOf(holder.mItem.nRSSI));
         holder.mConnected.setChecked(holder.mItem.bConnected);
@@ -62,6 +63,7 @@ public class ScanDevicesRecyclerViewAdapter extends RecyclerView.Adapter<ScanDev
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mMac;
+        public final TextView mTitle;
         public final TextView mRssi;
         public final CheckBox mConnected;
         public DeviceItem mItem;
@@ -69,6 +71,7 @@ public class ScanDevicesRecyclerViewAdapter extends RecyclerView.Adapter<ScanDev
         public ViewHolder(View view) {
             super(view);
             mView = view;
+            mTitle = (TextView) view.findViewById(R.id.title);
             mMac = (TextView) view.findViewById(R.id.mac);
             mRssi = (TextView) view.findViewById(R.id.rssi);
             mConnected = (CheckBox) view.findViewById(R.id.chkConnect);

@@ -19,6 +19,17 @@
         android:src="@drawable/sensortag2" />
 
     <TextView
+        android:id="@+id/title"
+        style="@style/nameStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_vertical"
+        android:layout_weight="4"
+        android:focusable="false"
+        android:clickable="false"
+        android:gravity="left" />
+
+    <TextView
         android:id="@+id/mac"
         style="@style/nameStyle"
         android:layout_width="wrap_content"
