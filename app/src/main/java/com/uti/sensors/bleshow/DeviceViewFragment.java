@@ -32,7 +32,9 @@ public class DeviceViewFragment extends Fragment {
     private static final String TAG = "DeviceViewFragment";
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_SECTION_TITLE = "section_title";
+    private static final String ARG_SECTION_MAC = "section_mac";
     public String title;
+    public String mac;
     private RxBleClient mRxBleClient;
     private rx.Observable<RxBleConnection> mRxBleConnection;
     private Subscription connection;
@@ -51,11 +53,12 @@ public class DeviceViewFragment extends Fragment {
         super();
     }
 
-    public static DeviceViewFragment newInstance(int sectionNumber, String title) {
+    public static DeviceViewFragment newInstance(int sectionNumber, String title, String mac) {
         DeviceViewFragment fragment = new DeviceViewFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         args.putString(ARG_SECTION_TITLE, title);
+        args.putString(ARG_SECTION_MAC, mac);
         fragment.setArguments(args);
         return fragment;
     }
@@ -128,8 +131,9 @@ public class DeviceViewFragment extends Fragment {
 
         tabLayout = (TableLayout) view.findViewById(R.id.generic_services_layout);
         this.title = getArguments().getString(ARG_SECTION_TITLE);
+        this.mac = getArguments().getString(ARG_SECTION_MAC);
 
-        RxBleDevice dev = mRxBleClient.getBleDevice(this.title);
+        RxBleDevice dev = mRxBleClient.getBleDevice(this.mac);
 
         // for monitor connection change status
         if (dev.getConnectionState() != RxBleConnection.RxBleConnectionState.CONNECTED)
@@ -170,9 +174,9 @@ public class DeviceViewFragment extends Fragment {
 
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
         if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTED)) {
-            Log.d(TAG, "Device:" + title + "  connected");
-            DeviceContext.ITEM_MAP.get(title).bConnected = true;
-            RxBleDevice dev = mRxBleClient.getBleDevice(this.title);
+            Log.d(TAG, "Device:" + title + ", MAC:" + mac + " connected");
+            DeviceContext.ITEM_MAP.get(mac).bConnected = true;
+            RxBleDevice dev = mRxBleClient.getBleDevice(this.mac);
 
             // for SimpleKey services
             simpleKey = new SimpleKeyProfile(mRxBleConnection);
@@ -200,7 +204,7 @@ public class DeviceViewFragment extends Fragment {
             if (temperture.configuration())
                 temperture.registerNotification(getActivity(), scroll, tabLayout);
         } else if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTING)) {
-            Log.d(TAG, "Device:" + title + "  connecting");
+            Log.d(TAG, "Device:" + title + ", MAC:" + mac + "  connecting");
         } else if (newState.equals(RxBleConnection.RxBleConnectionState.DISCONNECTED)) {
 
         } else if (newState.equals(RxBleConnection.RxBleConnectionState.DISCONNECTING)) {

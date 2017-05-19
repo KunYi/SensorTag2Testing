@@ -1,13 +1,11 @@
 package com.uti.sensors.bleshow.Devices;
 
-import android.support.v4.view.ViewCompat;
+import com.uti.sensors.bleshow.DeviceViewFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.polidea.rxandroidble.RxBleDevice;
-import com.uti.sensors.bleshow.DeviceViewFragment;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -27,8 +25,18 @@ public class DeviceContext {
      */
     public static final Map<String, DeviceItem> ITEM_MAP = new HashMap<String, DeviceItem>();
 
+    public static final Map<String, String> Names = new HashMap<String, String>();
+
+
     private static final int COUNT = 1;
 
+    public static void createMacWithName(String mac, String name) {
+        Names.put(mac, name);
+    }
+
+    public static String queryName(String mac) {
+        return Names.get(mac);
+    }
 
     public static boolean CheckDeviceExist(final String mac) {
         return (ITEM_MAP.get(mac) != null);
@@ -37,7 +45,12 @@ public class DeviceContext {
     public static int AddorUpdateDevice(String mac, int rssi) {
         DeviceItem dev = ITEM_MAP.get(mac);
         if (dev == null) {
-            dev = new DeviceItem(mac, rssi);
+            String name = Names.get(mac);
+
+            if (name == null) {
+                name = new String(mac);
+            }
+            dev = new DeviceItem(mac, name, rssi);
             dev.position = ITEMS.size();
             addItem(dev);
             return -1;
@@ -57,13 +70,15 @@ public class DeviceContext {
      */
     public static class DeviceItem {
         public final String MAC;
+        public final String name;
         public int nRSSI;
         public boolean bConnected;
         public int position;
         public DeviceViewFragment fragment;
 
-        public DeviceItem(String mac, int rssi) {
+        public DeviceItem(String mac, String name, int rssi) {
             this.MAC = mac;
+            this.name = name;
             this.nRSSI = rssi;
             this.bConnected = false;
             this.position = 0;

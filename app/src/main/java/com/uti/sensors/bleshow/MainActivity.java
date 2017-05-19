@@ -1,56 +1,44 @@
 package com.uti.sensors.bleshow;
 
 import android.Manifest;
-import android.app.ProgressDialog;
-import android.bluetooth.BluetoothClass;
 import android.content.pm.PackageManager;
 import android.database.DataSetObserver;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.polidea.rxandroidble.RxBleClient;
-
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
-import com.polidea.rxandroidble.RxBleDevice;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
-
 import com.uti.sensors.bleshow.Devices.DeviceContext;
 import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class MainActivity extends RxAppCompatActivity
         implements ScanDevicesFragment.OnListFragmentInteractionListener {
     private static final String TAG = "MainActivity";
-
+    private final static String FilterDeviceName = "CC2650 SensorTag";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -60,25 +48,34 @@ public class MainActivity extends RxAppCompatActivity
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
     private ScanDevicesFragment mScanDevices;
-    private List<DeviceViewFragment>  mDevices;
-
+    private List<DeviceViewFragment> mDevices;
     private RxBleClient mRxBleClient;
     private Subscription mScanSubscroption;
-    private final static String FilterDeviceName = "CC2650 SensorTag";
 
+    private void createNameMap() {
+        DeviceContext.createMacWithName("24:71:89:BE:C1:01", "uNode01");
+        DeviceContext.createMacWithName("24:71:89:BE:F9:04", "uNode02");
+        DeviceContext.createMacWithName("24:71:89:C0:59:84", "uNode03");
+        DeviceContext.createMacWithName("24:71:89:C0:FF:04", "uNode04");
+        DeviceContext.createMacWithName("24:71:89:C0:86:00", "uNode05");
+        DeviceContext.createMacWithName("24:71:89:C0:8C:02", "uNode06");
+        DeviceContext.createMacWithName("24:71:89:C1:2E:81", "uNode07");
+        DeviceContext.createMacWithName("24:71:89:C1:43:06", "uNode08");
+        DeviceContext.createMacWithName("24:71:89:C1:55:02", "uNode09");
+        DeviceContext.createMacWithName("A0:E6:F8:AE:FB:04", "uNode10");
+        DeviceContext.createMacWithName("A0:E6:F8:AF:7F:07", "uNode11");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate() entry");
-
+        createNameMap();
         setContentView(R.layout.activity_main);
         checkPermission();
 
@@ -142,19 +139,17 @@ public class MainActivity extends RxAppCompatActivity
         }
     }
 
-    private void checkPermission()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             boolean isCoarse = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED);
             boolean isFine = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED);
 
             if (!isCoarse || !isFine) {
-                ActivityCompat.requestPermissions(this, new String [] {
+                ActivityCompat.requestPermissions(this, new String[]{
                                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                                Manifest.permission.ACCESS_FINE_LOCATION },
+                                Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
             }
         }
@@ -188,43 +183,6 @@ public class MainActivity extends RxAppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            if (position == 0)
-                return mScanDevices;
-
-            // Return DeviceViewFragment
-            position -= 1;
-            return mDevices.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mDevices.size()+1;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            if (position == 0)
-                return "Sensors";
-
-            position -= 1;
-            return mDevices.get(position).title;
-        }
-    }
-
     private boolean isScanning() {
         return (mScanSubscroption != null);
     }
@@ -237,9 +195,9 @@ public class MainActivity extends RxAppCompatActivity
                 .filter(rxBleScanResult -> {
                     return FilterDeviceName.equals(rxBleScanResult.getBleDevice().getName());
                 })
-                .subscribe( rxBleScanResult -> {
+                .subscribe(rxBleScanResult -> {
                     int position = DeviceContext.AddorUpdateDevice(rxBleScanResult.getBleDevice()
-                            .getMacAddress(),
+                                    .getMacAddress(),
                             rxBleScanResult.getRssi());
                     if (position >= 0)
                         mScanDevices.getAdapter().notifyItemChanged(position);
@@ -272,8 +230,9 @@ public class MainActivity extends RxAppCompatActivity
         mScanDevices.getAdapter().notifyItemChanged(item.position);
 
         if (wantConnect) {
-            DeviceViewFragment fragment = DeviceViewFragment.newInstance(mDevices.size(), item.MAC);
-            fragment.title = item.MAC;
+            DeviceViewFragment fragment = DeviceViewFragment.newInstance(mDevices.size(), item.name, item.MAC);
+            fragment.title = item.name;
+            fragment.mac = item.MAC;
             item.fragment = fragment;
             mDevices.add(fragment);
             mSectionsPagerAdapter.notifyDataSetChanged();
@@ -308,6 +267,43 @@ public class MainActivity extends RxAppCompatActivity
             default:
                 Toast.makeText(MainActivity.this, "Unable to start scanning", Toast.LENGTH_SHORT).show();
                 break;
+        }
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            if (position == 0)
+                return mScanDevices;
+
+            // Return DeviceViewFragment
+            position -= 1;
+            return mDevices.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mDevices.size() + 1;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if (position == 0)
+                return "Sensors";
+
+            position -= 1;
+            return mDevices.get(position).title;
         }
     }
 }
