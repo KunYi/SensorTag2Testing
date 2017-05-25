@@ -72,7 +72,13 @@ public class DeviceContext {
         public final String MAC;
         public final String name;
         public int nRSSI;
-        public boolean bConnected;
+        // public boolean bConnected;
+        public enum CONNECT_STATE {
+            DISCONNECTING, CONNECTING,
+            CONNECTED, DISCONNECTED
+        };
+
+        public CONNECT_STATE state;
         public int position;
         public DeviceViewFragment fragment;
 
@@ -80,7 +86,7 @@ public class DeviceContext {
             this.MAC = mac;
             this.name = name;
             this.nRSSI = rssi;
-            this.bConnected = false;
+            this.state = CONNECT_STATE.DISCONNECTED;
             this.position = 0;
             this.fragment = null;
         }

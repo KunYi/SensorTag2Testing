@@ -1,5 +1,6 @@
 package com.uti.sensors.bleshow;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,12 +17,14 @@ import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.RxBleDevice;
 import com.polidea.rxandroidble.utils.ConnectionSharingAdapter;
 import com.uti.sensors.bleshow.Devices.DeviceContext;
+import com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem;
 
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem.CONNECT_STATE.*;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -48,6 +51,11 @@ public class DeviceViewFragment extends Fragment {
     private HumidityProfile humidity;
     private ScrollView scroll = null;
     private TableLayout tabLayout;
+    private onRssiListener mListener;
+
+    public interface onRssiListener {
+        public void onRssiDeviceUpdate(int position);
+    }
 
     public DeviceViewFragment() {
         super();
@@ -63,6 +71,23 @@ public class DeviceViewFragment extends Fragment {
         return fragment;
     }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof onRssiListener)
+            mListener = (onRssiListener) context;
+        else {
+            throw new RuntimeException(context.toString()
+                    + " must implement onRssiListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,10 +168,11 @@ public class DeviceViewFragment extends Fragment {
                     .subscribe(this::onConnectionStateChange);
 
         // connection devices
-        if (dev.getConnectionState() != RxBleConnection.RxBleConnectionState.CONNECTED)
+
+        if ((dev.getConnectionState() != RxBleConnection.RxBleConnectionState.CONNECTED) || connection != null)
             connection = dev.establishConnection(false)
                     //.compose(bindUntilEvent(PAUSE))
-                    .subscribeOn(Schedulers.newThread())
+                    //.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .compose(rxBleConnectionObservable ->
                             mRxBleConnection = new ConnectionSharingAdapter() {
@@ -165,7 +191,10 @@ public class DeviceViewFragment extends Fragment {
     }
 
     private void updateRssi(int val) {
-        Log.d(TAG, "Rssi:" + val);
+        DeviceItem dev = DeviceContext.ITEM_MAP.get(mac);
+        dev.nRSSI = val;
+        int position = dev.position;
+        // mListener.onRssiDeviceUpdate(position);
     }
 
     private void onConnectionFailure(Throwable throwable) {
@@ -175,7 +204,7 @@ public class DeviceViewFragment extends Fragment {
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
         if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTED)) {
             Log.d(TAG, "Device:" + title + ", MAC:" + mac + " connected");
-            DeviceContext.ITEM_MAP.get(mac).bConnected = true;
+            DeviceContext.ITEM_MAP.get(mac).state = CONNECTED;
             RxBleDevice dev = mRxBleClient.getBleDevice(this.mac);
 
             // for SimpleKey services

@@ -34,9 +34,10 @@ import java.util.List;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import static com.uti.sensors.bleshow.Devices.DeviceContext.DeviceItem.CONNECT_STATE.*;
 
 public class MainActivity extends RxAppCompatActivity
-        implements ScanDevicesFragment.OnListFragmentInteractionListener {
+        implements ScanDevicesFragment.OnListFragmentInteractionListener, DeviceViewFragment.onRssiListener {
     private static final String TAG = "MainActivity";
     private final static String FilterDeviceName = "CC2650 SensorTag";
     /**
@@ -226,7 +227,7 @@ public class MainActivity extends RxAppCompatActivity
 
     @Override
     public void onListFragmentInteraction(DeviceItem item) {
-        boolean wantConnect = !item.bConnected;
+        boolean wantConnect = (item.state == DISCONNECTED);
         mScanDevices.getAdapter().notifyItemChanged(item.position);
 
         if (wantConnect) {
@@ -235,9 +236,15 @@ public class MainActivity extends RxAppCompatActivity
             fragment.mac = item.MAC;
             item.fragment = fragment;
             mDevices.add(fragment);
+            item.state = CONNECTING;
             mSectionsPagerAdapter.notifyDataSetChanged();
             mScanSubscroption.unsubscribe();
         }
+    }
+
+    @Override
+    public void onRssiDeviceUpdate(int position) {
+        mScanDevices.getAdapter().notifyItemChanged(position);
     }
 
     private void onScanFailure(Throwable throwable) {

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TableLayout;
 
 import com.polidea.rxandroidble.RxBleConnection;
+import com.polidea.rxandroidble.exceptions.BleException;
 import com.polidea.rxandroidble.exceptions.BleGattException;
 
 import java.util.UUID;
@@ -89,8 +90,6 @@ public abstract class GenericProfile {
     }
 
     private void onConnectionFailure(Throwable throwable) {
-        BleGattException BGE = (BleGattException) throwable;
-        Log.d(TAG, "Catch connection failed:" + BGE.getMacAddress());
         Log.d(TAG, "Throwable:" + throwable);
     }
     /*

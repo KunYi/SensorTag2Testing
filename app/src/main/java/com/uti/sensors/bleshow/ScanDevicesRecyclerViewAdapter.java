@@ -41,7 +41,8 @@ public class ScanDevicesRecyclerViewAdapter extends RecyclerView.Adapter<ScanDev
         holder.mTitle.setText(holder.mItem.name);
         holder.mMac.setText(holder.mItem.MAC);
         holder.mRssi.setText(" RSSI: " + String.valueOf(holder.mItem.nRSSI));
-        holder.mConnected.setChecked(holder.mItem.bConnected);
+        holder.mConnected.setEnabled(holder.mItem.state == DeviceItem.CONNECT_STATE.DISCONNECTED);
+        holder.mConnected.setChecked(holder.mItem.state == DeviceItem.CONNECT_STATE.CONNECTED);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
