@@ -344,49 +344,6 @@ public class GenericTabRow extends TableRow implements
         icon.setLayoutParams(iconItemParams);
     }
 
-    public void setIcon(String iconPrefix, String uuid, String variantName) {
-        WindowManager wm = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point dSize = new Point();
-        display.getSize(dSize);
-        Drawable image = null;
-
-
-        if (dSize.x > 1100) {
-            Uri uri = Uri.parse("android.resource://" + this.context.getPackageName() + "/drawable/" + iconPrefix + variantName + "_300");
-            try {
-                InputStream inputStream = this.context.getContentResolver().openInputStream(uri);
-                image = Drawable.createFromStream(inputStream, uri.toString());
-                iconSize = 360;
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "Could not find icon filename : " + uri.toString());
-            }
-        } else {
-            Uri uri = Uri.parse("android.resource://" + this.context.getPackageName() + "/drawable/" + iconPrefix + variantName);
-            try {
-                InputStream inputStream = this.context.getContentResolver().openInputStream(uri);
-                image = Drawable.createFromStream(inputStream, uri.toString());
-                iconSize = 210;
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "Could not find icon filename : " + uri.toString());
-            }
-        }
-        this.sl1.displayWidth = this.sl2.displayWidth = this.sl3.displayWidth = dSize.x - iconSize - 5;
-        icon.setImageDrawable(image);
-        RelativeLayout.LayoutParams iconItemParams = new RelativeLayout.LayoutParams(
-                iconSize,
-                iconSize) {
-            {
-                addRule(RelativeLayout.CENTER_VERTICAL,
-                        RelativeLayout.TRUE);
-                addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            }
-
-        };
-        icon.setLayoutParams(iconItemParams);
-
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
