@@ -225,6 +225,7 @@ public class DeviceViewFragment extends Fragment {
             if (barometer.configuration())
                 barometer.registerNotification(getActivity(), scroll, tabLayout);
 
+
             humidity = new HumidityProfile(mRxBleConnection);
             if (humidity.configuration())
                 humidity.registerNotification(getActivity(), scroll, tabLayout);
@@ -232,6 +233,7 @@ public class DeviceViewFragment extends Fragment {
             temperture = new TempertureProfile(mRxBleConnection);
             if (temperture.configuration())
                 temperture.registerNotification(getActivity(), scroll, tabLayout);
+
         } else if (newState.equals(RxBleConnection.RxBleConnectionState.CONNECTING)) {
             Log.d(TAG, "Device:" + title + ", MAC:" + mac + "  connecting");
         } else if (newState.equals(RxBleConnection.RxBleConnectionState.DISCONNECTED)) {
