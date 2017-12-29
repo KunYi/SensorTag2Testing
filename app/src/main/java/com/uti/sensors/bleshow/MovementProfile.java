@@ -10,6 +10,7 @@ import android.widget.TableRow;
 
 import com.polidea.rxandroidble.RxBleConnection;
 import com.uti.Utils.Point3D;
+import com.uti.sensors.bleshow.compass.Compass;
 
 import java.util.UUID;
 
@@ -106,8 +107,16 @@ public class MovementProfile extends GenericProfile {
         accelerometer = new Point3D(int16AtOffset(bytes, 6) / scaleAcce,
                 int16AtOffset(bytes, 8) / scaleAcce,
                 int16AtOffset(bytes, 10) / scaleAcce);
-        magnetometer = new Point3D(int16AtOffset(bytes, 12) / scaleMag,
-                int16AtOffset(bytes, 14) / scaleMag,
-                int16AtOffset(bytes, 16) / scaleMag);
+
+        // Calibrate compass on fly
+        Point3D calibratedPoint = Compass.calibrate(new Point3D(
+                int16AtOffset(bytes, 12),
+                int16AtOffset(bytes, 14),
+                int16AtOffset(bytes, 16)));
+
+        magnetometer = new Point3D(
+                calibratedPoint.x / scaleMag,
+                calibratedPoint.y / scaleMag,
+                calibratedPoint.z / scaleMag);
     }
 }

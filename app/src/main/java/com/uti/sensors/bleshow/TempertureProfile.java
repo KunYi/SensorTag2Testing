@@ -26,7 +26,7 @@ public class TempertureProfile extends GenericProfile {
     private final String TAG = "TempertureProfile";
     private final static String GattServ = "F000AA00-0451-4000-B000-0000000000000";
     private final static String GattData = "F000AA01-0451-4000-B000-0000000000000";
-    private final static String GattConf = "F000AA02-0451-4000-B000-0000000000000";
+    public final static String GattConf = "F000AA02-0451-4000-B000-0000000000000";
     private final static String GattPeri = "F000AA03-0451-4000-B000-0000000000000";
     private final static byte[] Bconf =  new byte[] {(byte)0x01 };
     private float ambient;

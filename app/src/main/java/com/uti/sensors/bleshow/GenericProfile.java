@@ -54,6 +54,17 @@ public abstract class GenericProfile {
                 .writeCharacteristic(uuidConf, baConf))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(action, this::onConnectionFailure);
+
+        // Speed up period for compass calibration
+        // For some reason temperature sensor does not work at this speed
+        if (!uuidConf.equals(UUID.fromString(TempertureProfile.GattConf))) {
+            // Period 0x14 = 200ms
+            byte[] periodConf = new byte[]{(byte) 0x14};
+            mConn.flatMap(rxBleConnection -> rxBleConnection
+                    .writeCharacteristic(uuidPeri, periodConf))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(action, this::onConnectionFailure);
+        }
     }
 
     protected void registerNotificationImp(Action1<byte[]> action) {
